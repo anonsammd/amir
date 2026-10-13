@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #050505;
+  --foreground: #ffffff;
+  --brand-black: #050505;
+  --brand-surface: #101010;
+  --brand-surface-secondary: #171717;
+  --brand-white: #ffffff;
+  --brand-muted: #b8b8b8;
+  --brand-red: #ff3030;
+  --brand-red-dark: #a90f20;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #050505;
+  color: #ffffff;
+  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff3030;
+}
+
+/* Red Glow Utilities */
+.glow-red-sm {
+  box-shadow: 0 0 15px rgba(255, 48, 48, 0.15);
+}
+
+.glow-red-md {
+  box-shadow: 0 0 25px rgba(255, 48, 48, 0.25);
+}
+
+.glow-red-lg {
+  box-shadow: 0 0 40px rgba(255, 48, 48, 0.35);
+}
+
+.text-gradient-red {
+  background: linear-gradient(135deg, #ffffff 30%, #ff3030 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-pure-red {
+  background: linear-gradient(135deg, #ff3030 0%, #a90f20 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Red Subtle Radial Backgrounds */
+.bg-red-radial {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 48, 48, 0.12) 0%, rgba(5, 5, 5, 0) 70%);
+}
+
+.bg-red-radial-top {
+  background: radial-gradient(circle at 50% 0%, rgba(255, 48, 48, 0.15) 0%, rgba(5, 5, 5, 0) 70%);
+}
+
+/* 9:16 Aspect Ratio Helper */
+.aspect-vertical {
+  aspect-ratio: 9 / 16;
+}
+
+/* Section scroll offset for header */
+section[id] {
+  scroll-margin-top: 80px;
 }

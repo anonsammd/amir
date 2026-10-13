@@ -1,0 +1,28 @@
+[
+  {
+    "id": "acc_01",
+    "name": "DopexCreation Instagram",
+    "platform": "instagram",
+    "handle": "@dopexcreation",
+    "description": "Daily video edits, motion breakdowns, and behind-the-scenes timeline process.",
+    "profileImage": "",
+    "link": "https://instagram.com/dopexcreation",
+    "displayOrder": 1,
+    "hidden": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "acc_02",
+    "name": "DopexCreation YouTube Channel",
+    "platform": "youtube",
+    "handle": "DopexCreation",
+    "description": "Full-length cinematic showreels, editing tutorials, and long-form video breakdowns.",
+    "profileImage": "",
+    "link": "https://youtube.com/@dopexcreation",
+    "displayOrder": 2,
+    "hidden": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]

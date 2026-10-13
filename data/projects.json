@@ -1,0 +1,58 @@
+[
+  {
+    "id": "proj_01",
+    "title": "Cinematic Event Recap",
+    "youtubeUrl": "https://www.youtube.com/shorts/5E4q3_Lq328",
+    "youtubeId": "5E4q3_Lq328",
+    "category": "EVENT",
+    "description": "High-energy rhythm edit captured at a live electronic music showcase with custom color grading.",
+    "customThumbnail": "",
+    "featured": true,
+    "displayOrder": 1,
+    "hidden": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "proj_02",
+    "title": "Campus Culture Story",
+    "youtubeUrl": "https://www.youtube.com/shorts/L_LUpnjgPso",
+    "youtubeId": "L_LUpnjgPso",
+    "category": "CAMPUS",
+    "description": "Dynamic short-form video capturing the atmosphere and student energy across university festival.",
+    "customThumbnail": "",
+    "featured": true,
+    "displayOrder": 2,
+    "hidden": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "proj_03",
+    "title": "Urban Street Style Reel",
+    "youtubeUrl": "https://www.youtube.com/shorts/kJQP7kiw5Fk",
+    "youtubeId": "kJQP7kiw5Fk",
+    "category": "CINEMATIC",
+    "description": "Fast-paced lifestyle commercial edit focused on sound design and kinetic typography.",
+    "customThumbnail": "",
+    "featured": true,
+    "displayOrder": 3,
+    "hidden": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "proj_04",
+    "title": "Annual Gala Highlight",
+    "youtubeUrl": "https://www.youtube.com/shorts/fJ9rUzIMcZQ",
+    "youtubeId": "fJ9rUzIMcZQ",
+    "category": "CELEBRATION",
+    "description": "Elegant vertical showreel highlighting key speeches, crowd moments, and luxury aesthetics.",
+    "customThumbnail": "",
+    "featured": true,
+    "displayOrder": 4,
+    "hidden": false,
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z"
+  }
+]
