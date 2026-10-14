@@ -54,5 +54,19 @@
     "hidden": false,
     "createdAt": "2025-01-01T00:00:00.000Z",
     "updatedAt": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "proj_1791954491124_1ofc",
+    "title": "new eidt",
+    "youtubeUrl": "https://youtube.com/shorts/l5PSE_LvVd8?si=29Xsk5q7Jra1uIAX",
+    "youtubeId": "l5PSE_LvVd8",
+    "category": "CLIENTQ",
+    "description": "testing",
+    "customThumbnail": "",
+    "featured": true,
+    "displayOrder": 1,
+    "hidden": false,
+    "createdAt": "2026-10-14T05:08:11.124Z",
+    "updatedAt": "2026-10-14T05:08:11.124Z"
   }
 ]

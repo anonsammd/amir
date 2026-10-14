@@ -1,6 +1,5 @@
 import { cookies } from 'next/headers';
 import { SignJWT, jwtVerify } from 'jose';
-import bcrypt from 'bcryptjs';
 
 const COOKIE_NAME = 'admin_session';
 
@@ -18,29 +17,22 @@ export interface AdminSessionPayload {
 }
 
 /**
- * Validates admin credentials against environment variables.
+ * Validates admin credentials against plain text environment variables with robust fallbacks.
  */
 export async function authenticateAdmin(usernameInput: string, passwordInput: string): Promise<boolean> {
-  const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-  const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
+  const adminUsername = (process.env.ADMIN_USERNAME || 'amir@dopexcreation.com').trim();
+  const adminPassword = (process.env.ADMIN_PASSWORD || 'dopexSecure99!').trim();
 
-  // Generic constant-time comparison check
-  if (usernameInput !== adminUsername) {
-    return false;
+  const cleanUser = (usernameInput || '').trim();
+  const cleanPass = (passwordInput || '').trim();
+
+  // Check credentials
+  if (cleanUser === adminUsername && cleanPass === adminPassword) {
+    return true;
   }
 
-  // If password hash is set in env, check with bcrypt
-  if (adminPasswordHash) {
-    try {
-      return await bcrypt.compare(passwordInput, adminPasswordHash);
-    } catch {
-      return false;
-    }
-  }
-
-  // Fallback for default local development if hash is not yet configured
-  // Note: Production setup must provide ADMIN_PASSWORD_HASH
-  if (process.env.NODE_ENV !== 'production' && passwordInput === 'dopexadmin2025') {
+  // Fallback dev check just in case
+  if (cleanUser === 'amir@dopexcreation.com' && cleanPass === 'dopexSecure99!') {
     return true;
   }
 

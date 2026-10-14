@@ -1,6 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { Project, SocialAccount } from './types';
+import { isDatabaseConfigured, getDbProjects, upsertDbProject, getDbAccounts, upsertDbAccount } from './db';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_OWNER = process.env.GITHUB_OWNER;
@@ -23,9 +24,6 @@ interface GitHubFileResponse {
   encoding: string;
 }
 
-/**
- * Reads JSON file content from GitHub repository or local fallback.
- */
 async function readGitHubJson<T>(filePath: string, localFallbackPath: string): Promise<{ data: T[]; sha?: string }> {
   if (isGitHubConfigured()) {
     try {
@@ -50,7 +48,6 @@ async function readGitHubJson<T>(filePath: string, localFallbackPath: string): P
     }
   }
 
-  // Fallback to local file
   try {
     const raw = await fs.readFile(localFallbackPath, 'utf-8');
     const parsed = JSON.parse(raw);
@@ -60,9 +57,6 @@ async function readGitHubJson<T>(filePath: string, localFallbackPath: string): P
   }
 }
 
-/**
- * Commits JSON file update to GitHub or saves locally.
- */
 async function writeGitHubJson<T>(
   filePath: string,
   localFallbackPath: string,
@@ -74,7 +68,6 @@ async function writeGitHubJson<T>(
 
   if (isGitHubConfigured()) {
     try {
-      // If SHA wasn't passed, fetch current SHA
       let currentSha = fileSha;
       if (!currentSha) {
         const checkUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${filePath}?ref=${GITHUB_BRANCH}`;
@@ -124,7 +117,6 @@ async function writeGitHubJson<T>(
         };
       }
 
-      // Also mirror update to local disk if available
       try {
         await fs.writeFile(localFallbackPath, jsonContent, 'utf-8');
       } catch {
@@ -138,7 +130,6 @@ async function writeGitHubJson<T>(
     }
   }
 
-  // Fallback to local file update
   try {
     await fs.writeFile(localFallbackPath, jsonContent, 'utf-8');
     return { success: true };
@@ -148,9 +139,17 @@ async function writeGitHubJson<T>(
   }
 }
 
-// Public Project CRUD Operations (No Delete)
+// Public Project Operations with Neon DB support
 
 export async function getProjects(includeHidden: boolean = false): Promise<Project[]> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await getDbProjects(includeHidden);
+    } catch (dbErr) {
+      console.error('Neon DB getProjects failed, falling back to JSON store:', dbErr);
+    }
+  }
+
   const { data } = await readGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH);
   const sorted = data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   if (includeHidden) {
@@ -160,6 +159,14 @@ export async function getProjects(includeHidden: boolean = false): Promise<Proje
 }
 
 export async function upsertProject(projectData: Partial<Project> & { title: string; youtubeUrl: string; youtubeId: string; category: string }): Promise<{ success: boolean; project?: Project; error?: string }> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await upsertDbProject(projectData);
+    } catch (dbErr) {
+      console.error('Neon DB upsertProject failed, falling back to JSON store:', dbErr);
+    }
+  }
+
   const { data: existingProjects, sha } = await readGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH);
 
   const now = new Date().toISOString();
@@ -167,7 +174,6 @@ export async function upsertProject(projectData: Partial<Project> & { title: str
   let newList: Project[];
 
   if (projectData.id) {
-    // Edit existing project
     const idx = existingProjects.findIndex((p) => p.id === projectData.id);
     if (idx === -1) {
       return { success: false, error: `Project with ID '${projectData.id}' not found.` };
@@ -180,7 +186,6 @@ export async function upsertProject(projectData: Partial<Project> & { title: str
     newList = [...existingProjects];
     newList[idx] = updatedProject;
   } else {
-    // Add new project
     const newId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     updatedProject = {
       id: newId,
@@ -209,9 +214,17 @@ export async function upsertProject(projectData: Partial<Project> & { title: str
   return { success: true, project: updatedProject };
 }
 
-// Public Accounts CRUD Operations (No Delete)
+// Public Accounts Operations with Neon DB support
 
 export async function getAccounts(includeHidden: boolean = false): Promise<SocialAccount[]> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await getDbAccounts(includeHidden);
+    } catch (dbErr) {
+      console.error('Neon DB getAccounts failed, falling back to JSON store:', dbErr);
+    }
+  }
+
   const { data } = await readGitHubJson<SocialAccount>(GITHUB_ACCOUNTS_PATH, LOCAL_ACCOUNTS_PATH);
   const sorted = data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   if (includeHidden) {
@@ -221,6 +234,14 @@ export async function getAccounts(includeHidden: boolean = false): Promise<Socia
 }
 
 export async function upsertAccount(accountData: Partial<SocialAccount> & { name: string; platform: string; link: string }): Promise<{ success: boolean; account?: SocialAccount; error?: string }> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await upsertDbAccount(accountData);
+    } catch (dbErr) {
+      console.error('Neon DB upsertAccount failed, falling back to JSON store:', dbErr);
+    }
+  }
+
   const { data: existingAccounts, sha } = await readGitHubJson<SocialAccount>(GITHUB_ACCOUNTS_PATH, LOCAL_ACCOUNTS_PATH);
 
   const now = new Date().toISOString();
