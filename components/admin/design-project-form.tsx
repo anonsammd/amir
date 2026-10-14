@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { DesignProject } from '@/lib/types';
-import { Palette, Link as LinkIcon, Image as ImageIcon, Save, X, AlertCircle } from 'lucide-react';
+import { Palette, Link as LinkIcon, Upload, Save, X, AlertCircle } from 'lucide-react';
 
 interface DesignProjectFormProps {
   projectToEdit?: DesignProject | null;
@@ -21,13 +22,32 @@ export function DesignProjectForm({ projectToEdit, onSuccess, onCancel }: Design
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      setErrorMsg('Image file size must be less than 5MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        setImageUrl(reader.result);
+        setErrorMsg(null);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMsg(null);
 
     if (!title.trim() || !brandName.trim() || !imageUrl.trim() || !behanceLink.trim()) {
-      setErrorMsg('Please fill in all required fields.');
+      setErrorMsg('Please fill in all required fields and upload an image.');
       setIsSubmitting(false);
       return;
     }
@@ -76,7 +96,7 @@ export function DesignProjectForm({ projectToEdit, onSuccess, onCancel }: Design
               {projectToEdit ? 'Edit Design / Behance Project' : 'Add New Design Project'}
             </h3>
             <p className="text-xs text-[#B8B8B8]">
-              Manage showcase images and external Behance links.
+              Upload image directly and link to Behance.
             </p>
           </div>
         </div>
@@ -130,20 +150,33 @@ export function DesignProjectForm({ projectToEdit, onSuccess, onCancel }: Design
           </div>
         </div>
 
-        {/* Image URL */}
+        {/* Image File Upload */}
         <div>
           <label className="block text-xs font-mono font-bold text-[#B8B8B8] uppercase tracking-wider mb-2">
-            <ImageIcon className="w-3.5 h-3.5 inline mr-1 text-[#FF3030]" />
-            Image URL *
+            <Upload className="w-3.5 h-3.5 inline mr-1 text-[#FF3030]" />
+            Upload Design Image * (Max 5MB)
           </label>
-          <input
-            type="url"
-            required
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://images.unsplash.com/..."
-            className="w-full px-4 py-3 rounded-xl bg-[#050505] border border-[#262626] focus:border-[#FF3030] text-white text-sm focus:outline-none transition-colors"
-          />
+
+          <div className="flex items-center gap-4">
+            <label className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#262626] hover:border-[#FF3030]/60 rounded-xl bg-[#050505] cursor-pointer transition-colors group">
+              <div className="flex items-center gap-2 text-xs font-mono text-[#B8B8B8] group-hover:text-white">
+                <Upload className="w-5 h-5 text-[#FF3030]" />
+                <span>Click to browse or drop image file</span>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageFileChange}
+                className="hidden"
+              />
+            </label>
+
+            {imageUrl && (
+              <div className="w-20 h-20 rounded-xl border border-[#262626] overflow-hidden relative shrink-0 bg-black">
+                <Image src={imageUrl} alt="Preview" fill unoptimized className="object-cover" />
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Behance Link */}
