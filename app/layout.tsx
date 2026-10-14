@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'DopexCreation | Amir Saifi — Professional Video Editor',
+  title: 'DopexCreation | Aamir Saifi — Professional Video Editor',
   description:
-    'Explore cinematic edits, event films, short-form reels, and creative video projects by Amir Saifi at DopexCreation.',
+    'Explore cinematic edits, event films, short-form reels, and creative video projects by Aamir Saifi at DopexCreation.',
   icons: {
     icon: '/favicon.ico',
   },

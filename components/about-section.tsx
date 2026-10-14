@@ -28,7 +28,7 @@ export function AboutSection() {
                     <UserCheck className="w-3.5 h-3.5" />
                     <span>Creative Editor</span>
                   </div>
-                  <h3 className="text-3xl font-black text-white uppercase tracking-tight">AMIR SAIFI</h3>
+                  <h3 className="text-3xl font-black text-white uppercase tracking-tight">AAMIR SAIFI</h3>
                   <p className="text-xs font-mono text-[#B8B8B8] uppercase tracking-widest mt-1">
                     FOUNDER @ DOPEXCREATION
                   </p>
@@ -64,7 +64,7 @@ export function AboutSection() {
 
             <div className="space-y-4 text-base sm:text-lg text-[#B8B8B8] leading-relaxed mb-10">
               <p>
-                I&apos;m Amir Saifi, the editor behind DopexCreation. I transform raw footage into engaging visual stories, combining timing, rhythm, transitions, sound, and storytelling to make every frame count.
+                I&apos;m Aamir Saifi, the editor behind DopexCreation. I transform raw footage into engaging visual stories, combining timing, rhythm, transitions, sound, and storytelling to make every frame count.
               </p>
               <p>
                 From cinematic edits and event films to short-form content built for social media, my focus is simple: create videos that feel intentional, look polished, and keep people watching.

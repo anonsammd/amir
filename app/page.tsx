@@ -13,13 +13,13 @@ import { ScrollProgress } from '@/components/scroll-progress';
 import { CursorSpotlight } from '@/components/cursor-spotlight';
 
 export const metadata = {
-  title: 'DopexCreation | Amir Saifi — Professional Video Editor',
+  title: 'DopexCreation | Aamir Saifi — Professional Video Editor',
   description:
-    'Explore cinematic edits, event films, short-form reels, and creative video projects by Amir Saifi at DopexCreation.',
+    'Explore cinematic edits, event films, short-form reels, and creative video projects by Aamir Saifi at DopexCreation.',
   openGraph: {
-    title: 'DopexCreation | Amir Saifi — Professional Video Editor',
+    title: 'DopexCreation | Aamir Saifi — Professional Video Editor',
     description:
-      'Explore cinematic edits, event films, short-form reels, and creative video projects by Amir Saifi at DopexCreation.',
+      'Explore cinematic edits, event films, short-form reels, and creative video projects by Aamir Saifi at DopexCreation.',
     url: 'https://dopexcreation.com',
     siteName: 'DopexCreation',
     locale: 'en_US',
@@ -27,9 +27,9 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DopexCreation | Amir Saifi — Professional Video Editor',
+    title: 'DopexCreation | Aamir Saifi — Professional Video Editor',
     description:
-      'Explore cinematic edits, event films, short-form reels, and creative video projects by Amir Saifi at DopexCreation.',
+      'Explore cinematic edits, event films, short-form reels, and creative video projects by Aamir Saifi at DopexCreation.',
   },
 };
 

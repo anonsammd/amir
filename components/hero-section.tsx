@@ -152,12 +152,12 @@ export function HeroSection() {
                   </div>
                 </div>
 
-                {/* Hero Image Container (Shifted upward using object-[center_10%]) */}
+                {/* Hero Image Container */}
                 <div className="absolute inset-x-0 top-11 bottom-12 overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
                   {!imageError ? (
                     <Image
                       src="/new_amir_saifi.jpeg"
-                      alt="Amir Saifi - Video Editor"
+                      alt="Aamir Saifi - Video Editor"
                       fill
                       priority
                       className="object-cover object-[center_10%] transition-transform duration-700 group-hover:scale-105"
@@ -175,7 +175,7 @@ export function HeroSection() {
                       </div>
 
                       <div className="relative z-10 text-xl font-black text-white tracking-wider uppercase">
-                        AMIR SAIFI
+                        AAMIR SAIFI
                       </div>
                       <div className="relative z-10 text-xs font-mono text-[#FF3030] tracking-widest uppercase mt-1">
                         Lead Video Editor

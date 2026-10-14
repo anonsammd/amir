@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       fallbackMode: false,
-      message: 'Thank you for reaching out! Amir will review your project details and get back to you soon.',
+      message: 'Thank you for reaching out! Aamir will review your project details and get back to you soon.',
     });
   } catch (err) {
     console.error('Contact submission error:', err);
