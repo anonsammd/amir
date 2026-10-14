@@ -1,17 +1,28 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { Project, SocialAccount } from './types';
-import { isDatabaseConfigured, getDbProjects, upsertDbProject, deleteDbProject, getDbAccounts, upsertDbAccount } from './db';
+import { Project, DesignProject, SocialAccount } from './types';
+import {
+  isDatabaseConfigured,
+  getDbProjects,
+  upsertDbProject,
+  deleteDbProject,
+  getDbDesignProjects,
+  upsertDbDesignProject,
+  deleteDbDesignProject,
+  getDbAccounts,
+  upsertDbAccount,
+} from './db';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_OWNER = process.env.GITHUB_OWNER;
 const GITHUB_REPO = process.env.GITHUB_REPO;
 const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main';
 const GITHUB_PROJECTS_PATH = process.env.GITHUB_PROJECTS_PATH || 'data/projects.json';
+const GITHUB_DESIGN_PATH = 'data/design-projects.json';
 const GITHUB_ACCOUNTS_PATH = process.env.GITHUB_ACCOUNTS_PATH || 'data/accounts.json';
 
-// Local file path fallbacks
 const LOCAL_PROJECTS_PATH = path.join(process.cwd(), 'data', 'projects.json');
+const LOCAL_DESIGN_PATH = path.join(process.cwd(), 'data', 'design-projects.json');
 const LOCAL_ACCOUNTS_PATH = path.join(process.cwd(), 'data', 'accounts.json');
 
 function isGitHubConfigured(): boolean {
@@ -139,8 +150,7 @@ async function writeGitHubJson<T>(
   }
 }
 
-// Public Project Operations
-
+// Projects Operations
 export async function getProjects(includeHidden: boolean = false): Promise<Project[]> {
   if (isDatabaseConfigured()) {
     try {
@@ -152,9 +162,7 @@ export async function getProjects(includeHidden: boolean = false): Promise<Proje
 
   const { data } = await readGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH);
   const sorted = data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-  if (includeHidden) {
-    return sorted;
-  }
+  if (includeHidden) return sorted;
   return sorted.filter((p) => !p.hidden);
 }
 
@@ -168,21 +176,14 @@ export async function upsertProject(projectData: Partial<Project> & { title: str
   }
 
   const { data: existingProjects, sha } = await readGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH);
-
   const now = new Date().toISOString();
   let updatedProject: Project;
   let newList: Project[];
 
   if (projectData.id) {
     const idx = existingProjects.findIndex((p) => p.id === projectData.id);
-    if (idx === -1) {
-      return { success: false, error: `Project with ID '${projectData.id}' not found.` };
-    }
-    updatedProject = {
-      ...existingProjects[idx],
-      ...projectData,
-      updatedAt: now,
-    };
+    if (idx === -1) return { success: false, error: `Project not found.` };
+    updatedProject = { ...existingProjects[idx], ...projectData, updatedAt: now };
     newList = [...existingProjects];
     newList[idx] = updatedProject;
   } else {
@@ -206,11 +207,7 @@ export async function upsertProject(projectData: Partial<Project> & { title: str
 
   const commitMsg = projectData.id ? `admin: update project ${updatedProject.title}` : `admin: add project ${updatedProject.title}`;
   const res = await writeGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH, newList, commitMsg, sha);
-
-  if (!res.success) {
-    return { success: false, error: res.error };
-  }
-
+  if (!res.success) return { success: false, error: res.error };
   return { success: true, project: updatedProject };
 }
 
@@ -226,16 +223,85 @@ export async function deleteProject(id: string): Promise<{ success: boolean; err
   const { data: existingProjects, sha } = await readGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH);
   const newList = existingProjects.filter((p) => p.id !== id);
   const res = await writeGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH, newList, `admin: delete project ${id}`, sha);
-
-  if (!res.success) {
-    return { success: false, error: res.error };
-  }
-
+  if (!res.success) return { success: false, error: res.error };
   return { success: true };
 }
 
-// Public Accounts Operations
+// Design Projects Operations (Behance / Image showcases)
+export async function getDesignProjects(includeHidden: boolean = false): Promise<DesignProject[]> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await getDbDesignProjects(includeHidden);
+    } catch (dbErr) {
+      console.error('Neon DB getDesignProjects failed, falling back to JSON store:', dbErr);
+    }
+  }
 
+  const { data } = await readGitHubJson<DesignProject>(GITHUB_DESIGN_PATH, LOCAL_DESIGN_PATH);
+  const sorted = data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  if (includeHidden) return sorted;
+  return sorted.filter((d) => !d.hidden);
+}
+
+export async function upsertDesignProject(data: Partial<DesignProject> & { title: string; brandName: string; imageUrl: string; behanceLink: string }): Promise<{ success: boolean; designProject?: DesignProject; error?: string }> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await upsertDbDesignProject(data);
+    } catch (dbErr) {
+      console.error('Neon DB upsertDesignProject failed, falling back to JSON store:', dbErr);
+    }
+  }
+
+  const { data: existing, sha } = await readGitHubJson<DesignProject>(GITHUB_DESIGN_PATH, LOCAL_DESIGN_PATH);
+  const now = new Date().toISOString();
+  let updated: DesignProject;
+  let newList: DesignProject[];
+
+  if (data.id) {
+    const idx = existing.findIndex((d) => d.id === data.id);
+    if (idx === -1) return { success: false, error: 'Design project not found.' };
+    updated = { ...existing[idx], ...data, updatedAt: now };
+    newList = [...existing];
+    newList[idx] = updated;
+  } else {
+    const newId = `des_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    updated = {
+      id: newId,
+      title: data.title,
+      brandName: data.brandName,
+      imageUrl: data.imageUrl,
+      behanceLink: data.behanceLink,
+      displayOrder: data.displayOrder ?? existing.length + 1,
+      hidden: data.hidden ?? false,
+      createdAt: now,
+      updatedAt: now,
+    };
+    newList = [...existing, updated];
+  }
+
+  const commitMsg = data.id ? `admin: update design project ${updated.title}` : `admin: add design project ${updated.title}`;
+  const res = await writeGitHubJson<DesignProject>(GITHUB_DESIGN_PATH, LOCAL_DESIGN_PATH, newList, commitMsg, sha);
+  if (!res.success) return { success: false, error: res.error };
+  return { success: true, designProject: updated };
+}
+
+export async function deleteDesignProject(id: string): Promise<{ success: boolean; error?: string }> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await deleteDbDesignProject(id);
+    } catch (dbErr) {
+      console.error('Neon DB deleteDesignProject failed, falling back to JSON store:', dbErr);
+    }
+  }
+
+  const { data: existing, sha } = await readGitHubJson<DesignProject>(GITHUB_DESIGN_PATH, LOCAL_DESIGN_PATH);
+  const newList = existing.filter((d) => d.id !== id);
+  const res = await writeGitHubJson<DesignProject>(GITHUB_DESIGN_PATH, LOCAL_DESIGN_PATH, newList, `admin: delete design project ${id}`, sha);
+  if (!res.success) return { success: false, error: res.error };
+  return { success: true };
+}
+
+// Accounts Operations
 export async function getAccounts(includeHidden: boolean = false): Promise<SocialAccount[]> {
   if (isDatabaseConfigured()) {
     try {
@@ -247,9 +313,7 @@ export async function getAccounts(includeHidden: boolean = false): Promise<Socia
 
   const { data } = await readGitHubJson<SocialAccount>(GITHUB_ACCOUNTS_PATH, LOCAL_ACCOUNTS_PATH);
   const sorted = data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-  if (includeHidden) {
-    return sorted;
-  }
+  if (includeHidden) return sorted;
   return sorted.filter((a) => !a.hidden);
 }
 
@@ -263,21 +327,14 @@ export async function upsertAccount(accountData: Partial<SocialAccount> & { name
   }
 
   const { data: existingAccounts, sha } = await readGitHubJson<SocialAccount>(GITHUB_ACCOUNTS_PATH, LOCAL_ACCOUNTS_PATH);
-
   const now = new Date().toISOString();
   let updatedAccount: SocialAccount;
   let newList: SocialAccount[];
 
   if (accountData.id) {
     const idx = existingAccounts.findIndex((a) => a.id === accountData.id);
-    if (idx === -1) {
-      return { success: false, error: `Account with ID '${accountData.id}' not found.` };
-    }
-    updatedAccount = {
-      ...existingAccounts[idx],
-      ...accountData,
-      updatedAt: now,
-    };
+    if (idx === -1) return { success: false, error: `Account not found.` };
+    updatedAccount = { ...existingAccounts[idx], ...accountData, updatedAt: now };
     newList = [...existingAccounts];
     newList[idx] = updatedAccount;
   } else {
@@ -300,10 +357,6 @@ export async function upsertAccount(accountData: Partial<SocialAccount> & { name
 
   const commitMsg = accountData.id ? `admin: update account ${updatedAccount.name}` : `admin: add account ${updatedAccount.name}`;
   const res = await writeGitHubJson<SocialAccount>(GITHUB_ACCOUNTS_PATH, LOCAL_ACCOUNTS_PATH, newList, commitMsg, sha);
-
-  if (!res.success) {
-    return { success: false, error: res.error };
-  }
-
+  if (!res.success) return { success: false, error: res.error };
   return { success: true, account: updatedAccount };
 }

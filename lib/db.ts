@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { Project, SocialAccount } from './types';
+import { Project, DesignProject, SocialAccount } from './types';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -11,14 +11,12 @@ function getDatabaseUrl(): string | undefined {
   if (process.env.DATABASE_POSTGRES_URL) return process.env.DATABASE_POSTGRES_URL;
   if (process.env.DATABASE_POSTGRES_PRISMA_URL) return process.env.DATABASE_POSTGRES_PRISMA_URL;
 
-  // Check any DATABASE_ env var containing a PostgreSQL connection URL
   for (const [key, value] of Object.entries(process.env)) {
     if (key.startsWith('DATABASE_') && value && typeof value === 'string' && (value.startsWith('postgres://') || value.startsWith('postgresql://'))) {
       return value;
     }
   }
 
-  // Fallback: Construct connection string from individual Neon / Vercel PG components if present
   const host = process.env.DATABASE_PGHOST || process.env.DATABASE_POSTGRES_HOST;
   const user = process.env.DATABASE_PGUSER || process.env.DATABASE_POSTGRES_USER;
   const password = process.env.DATABASE_PGPASSWORD || process.env.DATABASE_POSTGRES_PASSWORD;
@@ -77,6 +75,18 @@ export async function initializeDatabase(): Promise<void> {
           updated_at TIMESTAMPTZ DEFAULT NOW()
         );
 
+        CREATE TABLE IF NOT EXISTS design_projects (
+          id VARCHAR(64) PRIMARY KEY,
+          title TEXT NOT NULL,
+          brand_name TEXT NOT NULL,
+          image_url TEXT NOT NULL,
+          behance_link TEXT NOT NULL,
+          display_order INT DEFAULT 0,
+          hidden BOOLEAN DEFAULT FALSE,
+          created_at TIMESTAMPTZ DEFAULT NOW(),
+          updated_at TIMESTAMPTZ DEFAULT NOW()
+        );
+
         CREATE TABLE IF NOT EXISTS accounts (
           id VARCHAR(64) PRIMARY KEY,
           name TEXT NOT NULL,
@@ -92,7 +102,7 @@ export async function initializeDatabase(): Promise<void> {
         );
       `);
 
-      // Check if projects table is empty, seed if so
+      // Seed projects
       const pRes = await client.query('SELECT COUNT(*) FROM projects;');
       if (parseInt(pRes.rows[0].count, 10) === 0) {
         try {
@@ -125,7 +135,37 @@ export async function initializeDatabase(): Promise<void> {
         }
       }
 
-      // Check if accounts table is empty, seed if so
+      // Seed design projects
+      const dRes = await client.query('SELECT COUNT(*) FROM design_projects;');
+      if (parseInt(dRes.rows[0].count, 10) === 0) {
+        try {
+          const localDesignPath = path.join(process.cwd(), 'data', 'design-projects.json');
+          const raw = await fs.readFile(localDesignPath, 'utf-8');
+          const designProjects: DesignProject[] = JSON.parse(raw);
+          for (const d of designProjects) {
+            await client.query(
+              `INSERT INTO design_projects (id, title, brand_name, image_url, behance_link, display_order, hidden, created_at, updated_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+               ON CONFLICT (id) DO NOTHING;`,
+              [
+                d.id,
+                d.title,
+                d.brandName,
+                d.imageUrl,
+                d.behanceLink,
+                d.displayOrder || 0,
+                d.hidden || false,
+                d.createdAt || new Date().toISOString(),
+                d.updatedAt || new Date().toISOString(),
+              ]
+            );
+          }
+        } catch (seedErr) {
+          console.error('Failed to seed design projects into Neon DB:', seedErr);
+        }
+      }
+
+      // Seed accounts
       const aRes = await client.query('SELECT COUNT(*) FROM accounts;');
       if (parseInt(aRes.rows[0].count, 10) === 0) {
         try {
@@ -166,6 +206,7 @@ export async function initializeDatabase(): Promise<void> {
   }
 }
 
+// Projects DB
 export async function getDbProjects(includeHidden: boolean = false): Promise<Project[]> {
   await initializeDatabase();
   const db = getPool();
@@ -186,7 +227,6 @@ export async function upsertDbProject(projectData: Partial<Project> & { title: s
 
   const now = new Date().toISOString();
   let projectId = projectData.id;
-
   if (!projectId) {
     projectId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   }
@@ -249,11 +289,89 @@ export async function deleteDbProject(id: string): Promise<{ success: boolean; e
   await initializeDatabase();
   const db = getPool();
   if (!db) return { success: false, error: 'Database not configured' };
-
   await db.query('DELETE FROM projects WHERE id = $1;', [id]);
   return { success: true };
 }
 
+// Design Projects DB
+export async function getDbDesignProjects(includeHidden: boolean = false): Promise<DesignProject[]> {
+  await initializeDatabase();
+  const db = getPool();
+  if (!db) return [];
+
+  const query = includeHidden
+    ? `SELECT id, title, brand_name as "brandName", image_url as "imageUrl", behance_link as "behanceLink", display_order as "displayOrder", hidden, created_at as "createdAt", updated_at as "updatedAt" FROM design_projects ORDER BY display_order ASC;`
+    : `SELECT id, title, brand_name as "brandName", image_url as "imageUrl", behance_link as "behanceLink", display_order as "displayOrder", hidden, created_at as "createdAt", updated_at as "updatedAt" FROM design_projects WHERE hidden = false ORDER BY display_order ASC;`;
+
+  const res = await db.query(query);
+  return res.rows;
+}
+
+export async function upsertDbDesignProject(data: Partial<DesignProject> & { title: string; brandName: string; imageUrl: string; behanceLink: string }): Promise<{ success: boolean; designProject?: DesignProject; error?: string }> {
+  await initializeDatabase();
+  const db = getPool();
+  if (!db) return { success: false, error: 'Database not configured' };
+
+  const now = new Date().toISOString();
+  let id = data.id;
+  if (!id) {
+    id = `des_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+  }
+
+  let displayOrder = data.displayOrder;
+  if (displayOrder === undefined) {
+    const countRes = await db.query('SELECT COUNT(*) FROM design_projects;');
+    displayOrder = parseInt(countRes.rows[0].count, 10) + 1;
+  }
+
+  const designProj: DesignProject = {
+    id,
+    title: data.title,
+    brandName: data.brandName,
+    imageUrl: data.imageUrl,
+    behanceLink: data.behanceLink,
+    displayOrder,
+    hidden: data.hidden ?? false,
+    createdAt: data.createdAt || now,
+    updatedAt: now,
+  };
+
+  await db.query(
+    `INSERT INTO design_projects (id, title, brand_name, image_url, behance_link, display_order, hidden, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+     ON CONFLICT (id) DO UPDATE SET
+       title = EXCLUDED.title,
+       brand_name = EXCLUDED.brand_name,
+       image_url = EXCLUDED.image_url,
+       behance_link = EXCLUDED.behance_link,
+       display_order = EXCLUDED.display_order,
+       hidden = EXCLUDED.hidden,
+       updated_at = EXCLUDED.updated_at;`,
+    [
+      designProj.id,
+      designProj.title,
+      designProj.brandName,
+      designProj.imageUrl,
+      designProj.behanceLink,
+      designProj.displayOrder,
+      designProj.hidden,
+      designProj.createdAt,
+      designProj.updatedAt,
+    ]
+  );
+
+  return { success: true, designProject: designProj };
+}
+
+export async function deleteDbDesignProject(id: string): Promise<{ success: boolean; error?: string }> {
+  await initializeDatabase();
+  const db = getPool();
+  if (!db) return { success: false, error: 'Database not configured' };
+  await db.query('DELETE FROM design_projects WHERE id = $1;', [id]);
+  return { success: true };
+}
+
+// Accounts DB
 export async function getDbAccounts(includeHidden: boolean = false): Promise<SocialAccount[]> {
   await initializeDatabase();
   const db = getPool();
@@ -274,7 +392,6 @@ export async function upsertDbAccount(accountData: Partial<SocialAccount> & { na
 
   const now = new Date().toISOString();
   let accountId = accountData.id;
-
   if (!accountId) {
     accountId = `acc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
   }

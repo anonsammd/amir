@@ -13,6 +13,18 @@ export interface Project {
   updatedAt: string;
 }
 
+export interface DesignProject {
+  id: string;
+  title: string;
+  brandName: string;
+  imageUrl: string;
+  behanceLink: string;
+  displayOrder: number;
+  hidden: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SocialAccount {
   id: string;
   name: string;
@@ -37,5 +49,6 @@ export interface ContactFormData {
 
 export interface ManifestData {
   projects: Project[];
+  designProjects: DesignProject[];
   accounts: SocialAccount[];
 }

@@ -1,7 +1,9 @@
-import { getProjects, getAccounts } from '@/lib/github-store';
+import { getProjects, getDesignProjects, getAccounts } from '@/lib/github-store';
 import { SiteHeader } from '@/components/site-header';
 import { HeroSection } from '@/components/hero-section';
+import { ServicesSection } from '@/components/services-section';
 import { ProjectsSection } from '@/components/projects-section';
+import { DesignProjectsSection } from '@/components/design-projects-section';
 import { AccountsSection } from '@/components/accounts-section';
 import { AboutSection } from '@/components/about-section';
 import { ContactSection } from '@/components/contact-section';
@@ -35,8 +37,9 @@ export const metadata = {
 export const revalidate = 60;
 
 export default async function HomePage() {
-  const [projects, accounts] = await Promise.all([
+  const [projects, designProjects, accounts] = await Promise.all([
     getProjects(false),
+    getDesignProjects(false),
     getAccounts(false),
   ]);
 
@@ -48,7 +51,9 @@ export default async function HomePage() {
       <SiteHeader />
       <main className="flex-grow relative z-10">
         <HeroSection />
+        <ServicesSection />
         <ProjectsSection initialProjects={projects} />
+        <DesignProjectsSection initialDesignProjects={designProjects} />
         <AccountsSection initialAccounts={accounts} />
         <AboutSection />
         <ContactSection />
