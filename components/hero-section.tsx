@@ -140,7 +140,7 @@ export function HeroSection() {
             <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-3xl overflow-hidden bg-[#101010] border border-[#262626] shadow-[0_0_50px_rgba(255,48,48,0.2)] p-3 group transform hover:scale-[1.01] transition-transform duration-500">
               <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#050505] flex flex-col justify-between border border-[#171717]">
 
-                {/* Editor Program Monitor Top Toolbar (Without the requested text) */}
+                {/* Editor Program Monitor Top Toolbar */}
                 <div className="flex items-center justify-between px-4 py-2.5 bg-[#141414] border-b border-[#222222] text-[10px] font-mono text-[#B8B8B8] z-30">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#FF3030] animate-pulse" />
@@ -152,19 +152,19 @@ export function HeroSection() {
                   </div>
                 </div>
 
-                {/* Hero Image Container */}
+                {/* Hero Image Container (Shifted upward using object-[center_10%]) */}
                 <div className="absolute inset-x-0 top-11 bottom-12 overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
                   {!imageError ? (
                     <Image
-                      src="/amir-hero.jpg"
+                      src="/new_amir_saifi.jpeg"
                       alt="Amir Saifi - Video Editor"
                       fill
                       priority
-                      className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      className="object-cover object-[center_10%] transition-transform duration-700 group-hover:scale-105"
                       onError={() => setImageError(true)}
                     />
                   ) : (
-                    /* Fallback Portrait if amir-hero.jpg is not yet uploaded */
+                    /* Fallback Portrait if new_amir_saifi.jpeg fails */
                     <div className="relative w-full h-full flex flex-col items-center justify-center text-center p-8 bg-gradient-to-b from-[#171717] via-[#0d0d0d] to-[#050505]">
                       <div className="absolute inset-0 opacity-15" style={{ backgroundImage: 'radial-gradient(#ff3030 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
 
@@ -181,16 +181,15 @@ export function HeroSection() {
                         Lead Video Editor
                       </div>
 
-                      {/* Upload Instruction Badge */}
                       <div className="relative z-10 mt-4 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#333] text-[11px] font-mono text-[#B8B8B8] max-w-[240px]">
                         <Camera className="w-3.5 h-3.5 text-[#FF3030] inline mr-1.5" />
-                        <span>Place your photo at <code className="text-white">public/amir-hero.jpg</code></span>
+                        <span>Place your photo at <code className="text-white">public/new_amir_saifi.jpeg</code></span>
                       </div>
                     </div>
                   )}
 
                   {/* Cinematic Grading Vignette & Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-95 pointer-events-none" />
                 </div>
 
                 {/* Editor Timeline / Audio Waveform Bottom Toolbar */}

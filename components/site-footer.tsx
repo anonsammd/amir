@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Film, ArrowUp, Lock } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowUp, Lock } from 'lucide-react';
 
 export function SiteFooter() {
   const scrollToTop = () => {
@@ -12,12 +13,12 @@ export function SiteFooter() {
     <footer className="bg-[#050505] border-t border-[#171717] py-12 text-[#B8B8B8]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 pb-12 border-b border-[#171717]">
-          {/* Brand Wordmark */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-md bg-[#FF3030] flex items-center justify-center text-black font-black text-sm">
-              <Film className="w-4 h-4 text-black stroke-[2.5]" />
+          {/* Brand Logo Only */}
+          <div className="flex items-center gap-2.5">
+            <div className="w-12 h-10 relative">
+              <Image src="/new_logo_dopexcreation.png" alt="DopexCreation Logo" fill className="object-contain" />
             </div>
-            <span className="text-white tracking-tighter text-lg font-black uppercase">
+            <span className="text-white tracking-tighter text-sm font-bold uppercase">
               DOPEX<span className="text-[#FF3030]">CREATION</span>
             </span>
           </div>
@@ -35,7 +36,7 @@ export function SiteFooter() {
           <button
             type="button"
             onClick={scrollToTop}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#101010] border border-[#171717] hover:border-[#FF3030] text-xs font-mono uppercase text-white transition-colors"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#101010] border border-[#171717] hover:border-[#FF3030] text-xs font-mono uppercase text-white transition-colors cursor-pointer"
           >
             <span>Back to top</span>
             <ArrowUp className="w-3.5 h-3.5 text-[#FF3030]" />

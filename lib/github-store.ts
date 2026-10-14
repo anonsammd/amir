@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { Project, SocialAccount } from './types';
-import { isDatabaseConfigured, getDbProjects, upsertDbProject, getDbAccounts, upsertDbAccount } from './db';
+import { isDatabaseConfigured, getDbProjects, upsertDbProject, deleteDbProject, getDbAccounts, upsertDbAccount } from './db';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GITHUB_OWNER = process.env.GITHUB_OWNER;
@@ -139,7 +139,7 @@ async function writeGitHubJson<T>(
   }
 }
 
-// Public Project Operations with Neon DB support
+// Public Project Operations
 
 export async function getProjects(includeHidden: boolean = false): Promise<Project[]> {
   if (isDatabaseConfigured()) {
@@ -214,7 +214,27 @@ export async function upsertProject(projectData: Partial<Project> & { title: str
   return { success: true, project: updatedProject };
 }
 
-// Public Accounts Operations with Neon DB support
+export async function deleteProject(id: string): Promise<{ success: boolean; error?: string }> {
+  if (isDatabaseConfigured()) {
+    try {
+      return await deleteDbProject(id);
+    } catch (dbErr) {
+      console.error('Neon DB deleteProject failed, falling back to JSON store:', dbErr);
+    }
+  }
+
+  const { data: existingProjects, sha } = await readGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH);
+  const newList = existingProjects.filter((p) => p.id !== id);
+  const res = await writeGitHubJson<Project>(GITHUB_PROJECTS_PATH, LOCAL_PROJECTS_PATH, newList, `admin: delete project ${id}`, sha);
+
+  if (!res.success) {
+    return { success: false, error: res.error };
+  }
+
+  return { success: true };
+}
+
+// Public Accounts Operations
 
 export async function getAccounts(includeHidden: boolean = false): Promise<SocialAccount[]> {
   if (isDatabaseConfigured()) {

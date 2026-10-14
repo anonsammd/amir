@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowUpRight, Film } from 'lucide-react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '#home' },
@@ -71,21 +72,18 @@ export function SiteHeader() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Brand Wordmark */}
+        {/* Brand Logo Only (No text, no background) */}
         <Link
           href="#home"
           onClick={(e) => {
             e.preventDefault();
             handleNavClick('#home');
           }}
-          className="group flex items-center gap-2 text-xl font-extrabold tracking-wider transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3030] rounded-sm"
+          className="group flex items-center transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3030] rounded-sm"
         >
-          <div className="w-8 h-8 rounded-md bg-[#FF3030] flex items-center justify-center text-black font-black text-sm group-hover:scale-105 transition-transform">
-            <Film className="w-4 h-4 text-black stroke-[2.5]" />
+          <div className="w-16 h-12 sm:w-20 sm:h-14 relative group-hover:scale-105 transition-transform">
+            <Image src="/new_logo_dopexcreation.png" alt="DopexCreation Logo" fill className="object-contain" priority />
           </div>
-          <span className="text-white tracking-tighter text-lg font-black uppercase">
-            DOPEX<span className="text-[#FF3030]">CREATION</span>
-          </span>
         </Link>
 
         {/* Desktop Navigation */}

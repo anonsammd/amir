@@ -245,6 +245,15 @@ export async function upsertDbProject(projectData: Partial<Project> & { title: s
   return { success: true, project };
 }
 
+export async function deleteDbProject(id: string): Promise<{ success: boolean; error?: string }> {
+  await initializeDatabase();
+  const db = getPool();
+  if (!db) return { success: false, error: 'Database not configured' };
+
+  await db.query('DELETE FROM projects WHERE id = $1;', [id]);
+  return { success: true };
+}
+
 export async function getDbAccounts(includeHidden: boolean = false): Promise<SocialAccount[]> {
   await initializeDatabase();
   const db = getPool();

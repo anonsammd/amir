@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyAdminSession } from '@/lib/auth';
-import { getProjects, upsertProject } from '@/lib/github-store';
+import { getProjects, upsertProject, deleteProject } from '@/lib/github-store';
 import { parseYouTubeVideoId } from '@/lib/youtube';
 import { z } from 'zod';
 
@@ -77,10 +77,34 @@ export async function PUT(request: Request) {
   return POST(request);
 }
 
-// Strictly prohibit permanent deletion as required by prompt
-export async function DELETE() {
-  return NextResponse.json(
-    { error: 'Permanent deletion is strictly prohibited by policy. You may toggle the hidden/published status to hide projects from public view.' },
-    { status: 405 }
-  );
+export async function DELETE(request: Request) {
+  const session = await verifyAdminSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
+
+  try {
+    const url = new URL(request.url);
+    const idParam = url.searchParams.get('id');
+
+    let projectId = idParam;
+    if (!projectId) {
+      const body = await request.json().catch(() => ({}));
+      projectId = body.id;
+    }
+
+    if (!projectId || typeof projectId !== 'string') {
+      return NextResponse.json({ error: 'Project ID is required for deletion.' }, { status: 400 });
+    }
+
+    const res = await deleteProject(projectId);
+    if (!res.success) {
+      return NextResponse.json({ error: res.error || 'Failed to delete project.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, message: 'Project deleted successfully.' });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : 'Failed to delete project';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

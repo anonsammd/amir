@@ -11,6 +11,7 @@ import {
   Film,
   Plus,
   Edit2,
+  Trash2,
   Eye,
   EyeOff,
   LogOut,
@@ -82,6 +83,29 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
     }
   };
 
+  const deleteProject = async (proj: Project) => {
+    if (!window.confirm(`Are you sure you want to permanently delete "${proj.title}"?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/projects?id=${proj.id}`, {
+        method: 'DELETE',
+      });
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.error || 'Failed to delete project');
+      }
+
+      setStatusMsg(`Deleted project "${proj.title}" successfully.`);
+      refreshData();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Failed to delete project';
+      setStatusMsg(msg);
+    }
+  };
+
   const toggleAccountVisibility = async (account: SocialAccount) => {
     try {
       const res = await fetch('/api/admin/accounts', {
@@ -118,35 +142,43 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <Link
               href="/"
               target="_blank"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider transition-colors border border-[#262626]"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider transition-colors border border-[#262626]"
             >
-              <span>View Public Site</span>
+              <span>View Live Site</span>
               <ExternalLink className="w-3.5 h-3.5 text-[#FF3030]" />
             </Link>
 
             <button
               type="button"
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#FF3030]/10 hover:bg-[#FF3030] text-[#FF3030] hover:text-white border border-[#FF3030]/30 text-xs font-mono uppercase font-bold tracking-wider transition-all"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#A90F20]/20 hover:bg-[#A90F20] text-white text-xs font-mono uppercase tracking-wider transition-colors border border-[#A90F20]/50"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-3.5 h-3.5 text-[#FF3030]" />
               <span>Logout</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Admin Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-8 py-10">
         {statusMsg && (
-          <div className="mb-6 p-3 rounded-xl bg-[#101010] border border-[#FF3030]/40 text-xs text-[#FF3030] font-mono flex items-center justify-between">
-            <span>{statusMsg}</span>
-            <button type="button" onClick={() => setStatusMsg(null)} className="text-[#B8B8B8] hover:text-white">
-              ✕
+          <div className="mb-8 p-4 rounded-2xl bg-[#101010] border border-[#FF3030]/40 flex items-center justify-between">
+            <div className="flex items-center gap-3 text-xs font-mono text-white">
+              <span className="w-2 h-2 rounded-full bg-[#FF3030] animate-pulse" />
+              <span>{statusMsg}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setStatusMsg(null)}
+              className="text-xs text-[#B8B8B8] hover:text-white"
+            >
+              Dismiss
             </button>
           </div>
         )}
@@ -258,14 +290,14 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
                   <div>
                     <h2 className="text-xl font-extrabold text-white uppercase tracking-tight">Showreel Edits</h2>
                     <p className="text-xs text-[#B8B8B8]">
-                      Manage portfolio videos. Deletion is restricted; toggle visibility to hide items.
+                      Manage and delete portfolio showreels or toggle visibility.
                     </p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setIsAddingProject(true)}
-                    className="px-4 py-2.5 rounded-xl bg-[#FF3030] hover:bg-[#A90F20] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,48,48,0.3)]"
+                    className="px-4 py-2.5 rounded-xl bg-[#FF3030] hover:bg-[#A90F20] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,48,48,0.3)] cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add Showreel</span>
@@ -304,7 +336,7 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
                         <button
                           type="button"
                           onClick={() => toggleProjectVisibility(proj)}
-                          className={`p-2 rounded-lg border text-xs font-mono transition-colors ${
+                          className={`p-2 rounded-lg border text-xs font-mono transition-colors cursor-pointer ${
                             proj.hidden
                               ? 'bg-[#171717] border-[#262626] text-[#B8B8B8] hover:text-white'
                               : 'bg-green-900/20 border-green-700/50 text-green-400'
@@ -317,10 +349,20 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
                         <button
                           type="button"
                           onClick={() => setEditingProject(proj)}
-                          className="px-3.5 py-1.5 rounded-lg bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider border border-[#262626] transition-colors flex items-center gap-1.5"
+                          className="px-3.5 py-1.5 rounded-lg bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider border border-[#262626] transition-colors flex items-center gap-1.5 cursor-pointer"
                         >
                           <Edit2 className="w-3.5 h-3.5 text-[#FF3030]" />
                           <span>Edit</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => deleteProject(proj)}
+                          className="px-3.5 py-1.5 rounded-lg bg-[#A90F20]/20 hover:bg-[#A90F20] text-white text-xs font-mono uppercase tracking-wider border border-[#A90F20]/50 transition-colors flex items-center gap-1.5 cursor-pointer"
+                          title="Delete project"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-[#FF3030] group-hover:text-white" />
+                          <span>Delete</span>
                         </button>
                       </div>
                     </div>
@@ -360,7 +402,7 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
                   <button
                     type="button"
                     onClick={() => setIsAddingAccount(true)}
-                    className="px-4 py-2.5 rounded-xl bg-[#FF3030] hover:bg-[#A90F20] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,48,48,0.3)]"
+                    className="px-4 py-2.5 rounded-xl bg-[#FF3030] hover:bg-[#A90F20] text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(255,48,48,0.3)] cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add Channel</span>
@@ -394,7 +436,7 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
                         <button
                           type="button"
                           onClick={() => toggleAccountVisibility(acc)}
-                          className={`p-2 rounded-lg border text-xs font-mono transition-colors ${
+                          className={`p-2 rounded-lg border text-xs font-mono transition-colors cursor-pointer ${
                             acc.hidden
                               ? 'bg-[#171717] border-[#262626] text-[#B8B8B8] hover:text-white'
                               : 'bg-green-900/20 border-green-700/50 text-green-400'
@@ -407,7 +449,7 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
                         <button
                           type="button"
                           onClick={() => setEditingAccount(acc)}
-                          className="px-3.5 py-1.5 rounded-lg bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider border border-[#262626] transition-colors flex items-center gap-1.5"
+                          className="px-3.5 py-1.5 rounded-lg bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider border border-[#262626] transition-colors flex items-center gap-1.5 cursor-pointer"
                         >
                           <Edit2 className="w-3.5 h-3.5 text-[#FF3030]" />
                           <span>Edit</span>
@@ -428,33 +470,19 @@ export function AdminDashboard({ initialProjects, initialAccounts }: AdminDashbo
               <Sparkles className="w-6 h-6 text-[#FF3030]" />
               <div>
                 <h3 className="text-lg font-bold text-white uppercase tracking-tight">
-                  GitHub & Local Persistence Configuration
+                  Database & Persistence Configuration
                 </h3>
                 <p className="text-xs text-[#B8B8B8]">
-                  How metadata is synced and stored across sessions.
+                  How metadata is stored across sessions and Vercel deployments.
                 </p>
               </div>
             </div>
 
             <div className="space-y-4 text-xs font-mono leading-relaxed text-[#B8B8B8]">
               <div className="p-4 rounded-2xl bg-[#050505] border border-[#262626] space-y-2">
-                <div className="text-white font-bold uppercase tracking-wider">GitHub API Sync Status</div>
+                <div className="text-white font-bold uppercase tracking-wider">Neon PostgreSQL Database</div>
                 <p>
-                  When <code className="text-[#FF3030]">GITHUB_TOKEN</code>, <code className="text-[#FF3030]">GITHUB_OWNER</code>, and <code className="text-[#FF3030]">GITHUB_REPO</code> are configured, every admin add/edit operation commits directly to your GitHub repository (<code className="text-white">data/projects.json</code> and <code className="text-white">data/accounts.json</code>) using optimistic concurrency protection.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#050505] border border-[#262626] space-y-2">
-                <div className="text-white font-bold uppercase tracking-wider">Local File Fallback</div>
-                <p>
-                  During local development or prior to setting up GitHub repository secrets, updates are written directly to local <code className="text-white">data/projects.json</code> and <code className="text-white">data/accounts.json</code>.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-[#050505] border border-[#262626] space-y-2">
-                <div className="text-white font-bold uppercase tracking-wider">No Deletion Safety Rule</div>
-                <p>
-                  As mandated by brand policy, portfolio records are never permanently deleted from the database. Instead, toggle the <code className="text-[#FF3030]">hidden</code> field to conceal items from public visitors without losing historical metadata.
+                  Connected to Vercel Neon DB. All project adds, edits, and deletions are permanently stored in your PostgreSQL database tables (`projects` and `accounts`).
                 </p>
               </div>
             </div>
