@@ -6,6 +6,9 @@ import { AccountsSection } from '@/components/accounts-section';
 import { AboutSection } from '@/components/about-section';
 import { ContactSection } from '@/components/contact-section';
 import { SiteFooter } from '@/components/site-footer';
+import { CinematicBackground } from '@/components/cinematic-background';
+import { ScrollProgress } from '@/components/scroll-progress';
+import { CursorSpotlight } from '@/components/cursor-spotlight';
 
 export const metadata = {
   title: 'DopexCreation | Amir Saifi — Professional Video Editor',
@@ -38,9 +41,12 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white flex flex-col selection:bg-[#FF3030] selection:text-white">
+    <div className="min-h-screen bg-[#050505] text-white flex flex-col selection:bg-[#FF3030] selection:text-white relative">
+      <ScrollProgress />
+      <CursorSpotlight />
+      <CinematicBackground />
       <SiteHeader />
-      <main className="flex-grow">
+      <main className="flex-grow relative z-10">
         <HeroSection />
         <ProjectsSection initialProjects={projects} />
         <AccountsSection initialAccounts={accounts} />

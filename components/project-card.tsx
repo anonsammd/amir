@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { Project } from '@/lib/types';
 import { YouTubeEmbed } from './youtube-embed';
 
@@ -12,8 +13,13 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
   const formattedIndex = (index + 1).toString().padStart(2, '0');
 
   return (
-    <article
-      className="w-full max-w-[300px] sm:max-w-[320px] mx-auto flex flex-col bg-[#101010] border border-[#171717] hover:border-[#FF3030]/50 rounded-2xl p-3 transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,48,48,0.15)] group"
+    <motion.article
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{ duration: 0.6, delay: (index % 4) * 0.1, ease: 'easeOut' }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+      className="w-full max-w-[300px] sm:max-w-[320px] mx-auto flex flex-col bg-[#101010] border border-[#171717] hover:border-[#FF3030]/60 rounded-2xl p-3 transition-shadow duration-300 hover:shadow-[0_10px_30px_rgba(255,48,48,0.2)] group"
       style={{
         position: 'relative',
         backgroundColor: '#101010',
@@ -96,6 +102,6 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
           )}
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 }

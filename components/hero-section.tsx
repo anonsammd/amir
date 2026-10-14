@@ -1,9 +1,13 @@
 'use client';
 
+import { useState } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Play, Sparkles, ArrowDown, Award, Zap } from 'lucide-react';
+import { Play, Sparkles, ArrowDown, Zap, Film, Camera } from 'lucide-react';
 
 export function HeroSection() {
+  const [imageError, setImageError] = useState(false);
+
   const scrollToReels = () => {
     document.getElementById('reels')?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -40,31 +44,51 @@ export function HeroSection() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101010] border border-[#171717] mb-6">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101010] border border-[#171717] mb-6 shadow-inner"
+            >
               <span className="w-2 h-2 rounded-full bg-[#FF3030] animate-pulse" />
               <span className="text-xs font-mono font-medium tracking-wider text-[#B8B8B8] uppercase">
-                INDEPENDENT VIDEO EDITOR · 4+ YEARS EXPERIENCE
+                DOPEXCREATION · PROFESSIONAL VIDEO EDITOR
               </span>
-            </div>
+            </motion.div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white uppercase mb-6">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white uppercase mb-6"
+            >
               YOUR VISION. <br />
               <span className="text-gradient-pure-red">MY EDIT.</span> <br />
               PURE IMPACT.
-            </h1>
+            </motion.h1>
 
             {/* Supporting Text */}
-            <p className="text-lg sm:text-xl text-[#B8B8B8] font-normal leading-relaxed max-w-2xl mb-8">
-              I turn raw footage into cinematic stories, scroll-stopping reels, and visuals people remember.
-            </p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3 }}
+              className="text-lg sm:text-xl text-[#B8B8B8] font-normal leading-relaxed max-w-2xl mb-8"
+            >
+              I turn raw footage into cinematic stories, scroll-stopping reels, and visuals people remember. Master of rhythm, color grading, and dynamic motion design.
+            </motion.p>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 w-full sm:w-auto mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.4 }}
+              className="flex flex-wrap items-center gap-4 w-full sm:w-auto mb-12"
+            >
               <button
                 type="button"
                 onClick={scrollToReels}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#FF3030] hover:bg-[#A90F20] text-white font-bold text-sm tracking-wider uppercase transition-all duration-200 transform hover:scale-[1.02] shadow-[0_0_20px_rgba(255,48,48,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#FF3030] hover:bg-[#A90F20] text-white font-bold text-sm tracking-wider uppercase transition-all duration-300 transform hover:scale-[1.03] shadow-[0_0_25px_rgba(255,48,48,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
                 <span>Explore My Work</span>
@@ -73,15 +97,20 @@ export function HeroSection() {
               <button
                 type="button"
                 onClick={scrollToContact}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#101010] hover:bg-[#171717] border border-[#262626] hover:border-[#FF3030]/50 text-white font-bold text-sm tracking-wider uppercase transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3030]"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#101010] hover:bg-[#171717] border border-[#262626] hover:border-[#FF3030]/60 text-white font-bold text-sm tracking-wider uppercase transition-all duration-300 transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3030] cursor-pointer"
               >
                 <Sparkles className="w-4 h-4 text-[#FF3030]" />
                 <span>Let&apos;s Collaborate</span>
               </button>
-            </div>
+            </motion.div>
 
             {/* Key Editorial Badges */}
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-[#171717] w-full max-w-xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.5 }}
+              className="grid grid-cols-3 gap-6 pt-6 border-t border-[#171717] w-full max-w-xl"
+            >
               <div>
                 <div className="text-2xl sm:text-3xl font-black text-white">4+</div>
                 <div className="text-xs text-[#B8B8B8] font-medium uppercase tracking-wider mt-0.5">Years Craft</div>
@@ -94,61 +123,101 @@ export function HeroSection() {
                 <div className="text-2xl sm:text-3xl font-black text-[#FF3030]">9:16</div>
                 <div className="text-xs text-[#B8B8B8] font-medium uppercase tracking-wider mt-0.5">Reel Specialist</div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
 
-          {/* Right Portrait & Visual Composition Column */}
+          {/* Right Portrait & Video Editing Suite Monitor Column */}
           <motion.div
             className="lg:col-span-5 flex justify-center lg:justify-end relative"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+            initial={{ opacity: 0, scale: 0.9, rotateY: 10 }}
+            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+            transition={{ duration: 0.9, delay: 0.3, ease: 'easeOut' }}
           >
             {/* Red Backdrop Glow */}
             <div className="absolute inset-0 bg-red-radial rounded-3xl blur-2xl opacity-70 -z-10" />
 
-            {/* Creative Card / Portrait Display Container */}
-            <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-3xl overflow-hidden bg-[#101010] border border-[#262626] shadow-2xl p-3 group">
-              <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#050505] flex flex-col justify-between p-6 border border-[#171717]">
-                {/* Background Editorial Graphic Effect */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent z-10" />
+            {/* Video Editing Program Monitor Window */}
+            <div className="relative w-full max-w-sm sm:max-w-md aspect-[4/5] rounded-3xl overflow-hidden bg-[#101010] border border-[#262626] shadow-[0_0_50px_rgba(255,48,48,0.2)] p-3 group transform hover:scale-[1.01] transition-transform duration-500">
+              <div className="relative w-full h-full rounded-2xl overflow-hidden bg-[#050505] flex flex-col justify-between border border-[#171717]">
 
-                {/* Simulated Portrait Image / Creative Showcase */}
-                <div className="absolute inset-0 flex items-center justify-center bg-[#101010]">
-                  <div className="relative w-full h-full flex flex-col items-center justify-center text-center p-8 bg-gradient-to-b from-[#171717] to-[#050505]">
-                    {/* Creative Abstract Visual Representation of Amir Saifi */}
-                    <div className="w-28 h-28 sm:w-32 sm:32 rounded-full bg-gradient-to-br from-[#FF3030] to-[#A90F20] flex items-center justify-center p-1 mb-4 shadow-[0_0_30px_rgba(255,48,48,0.4)]">
-                      <div className="w-full h-full rounded-full bg-[#050505] flex items-center justify-center text-white font-black text-2xl tracking-tighter">
-                        AS
+                {/* Editor Program Monitor Top Toolbar (Without the requested text) */}
+                <div className="flex items-center justify-between px-4 py-2.5 bg-[#141414] border-b border-[#222222] text-[10px] font-mono text-[#B8B8B8] z-30">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#FF3030] animate-pulse" />
+                    <span className="text-white font-bold tracking-wider">TIMELINE_V4 // MON_01</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[#FF3030]">
+                    <span className="px-1.5 py-0.5 rounded bg-[#FF3030]/20 font-bold">REC</span>
+                    <span>TC 01:04:22:15</span>
+                  </div>
+                </div>
+
+                {/* Hero Image Container */}
+                <div className="absolute inset-x-0 top-11 bottom-12 overflow-hidden bg-[#0a0a0a] flex items-center justify-center">
+                  {!imageError ? (
+                    <Image
+                      src="/amir-hero.jpg"
+                      alt="Amir Saifi - Video Editor"
+                      fill
+                      priority
+                      className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                      onError={() => setImageError(true)}
+                    />
+                  ) : (
+                    /* Fallback Portrait if amir-hero.jpg is not yet uploaded */
+                    <div className="relative w-full h-full flex flex-col items-center justify-center text-center p-8 bg-gradient-to-b from-[#171717] via-[#0d0d0d] to-[#050505]">
+                      <div className="absolute inset-0 opacity-15" style={{ backgroundImage: 'radial-gradient(#ff3030 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+
+                      <div className="relative z-10 w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-[#FF3030] to-[#A90F20] flex items-center justify-center p-1 mb-4 shadow-[0_0_35px_rgba(255,48,48,0.5)]">
+                        <div className="w-full h-full rounded-full bg-[#050505] flex items-center justify-center text-white font-black text-3xl tracking-tighter">
+                          AS
+                        </div>
+                      </div>
+
+                      <div className="relative z-10 text-xl font-black text-white tracking-wider uppercase">
+                        AMIR SAIFI
+                      </div>
+                      <div className="relative z-10 text-xs font-mono text-[#FF3030] tracking-widest uppercase mt-1">
+                        Lead Video Editor
+                      </div>
+
+                      {/* Upload Instruction Badge */}
+                      <div className="relative z-10 mt-4 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#333] text-[11px] font-mono text-[#B8B8B8] max-w-[240px]">
+                        <Camera className="w-3.5 h-3.5 text-[#FF3030] inline mr-1.5" />
+                        <span>Place your photo at <code className="text-white">public/amir-hero.jpg</code></span>
                       </div>
                     </div>
-                    <div className="text-xl font-bold text-white tracking-wider uppercase">AMIR SAIFI</div>
-                    <div className="text-xs font-mono text-[#FF3030] tracking-widest uppercase mt-1">
-                      Lead Video Editor & Designer
+                  )}
+
+                  {/* Cinematic Grading Vignette & Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-90 pointer-events-none" />
+                </div>
+
+                {/* Editor Timeline / Audio Waveform Bottom Toolbar */}
+                <div className="relative z-30 mt-auto px-4 py-3 bg-[#121212] border-t border-[#222222] flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-[#B8B8B8]">
+                    <div className="flex items-center gap-1 text-white">
+                      <Film className="w-3 h-3 text-[#FF3030]" />
+                      <span>A1 / V1 TIMELINE</span>
+                    </div>
+                    <div className="text-[#FF3030] font-bold tracking-widest">
+                      [||||||||||||||||||||] -6.2dB
                     </div>
                   </div>
+                  <div className="flex items-center justify-between text-[10px] text-[#888] font-mono">
+                    <span>COLOR: LOG-C3 TO REC.709</span>
+                    <span className="text-white">FPS: 59.94</span>
+                  </div>
                 </div>
 
-                {/* Floating Top Badge */}
-                <div className="relative z-20 self-end">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#050505]/80 backdrop-blur-md border border-[#FF3030]/40 text-[10px] font-mono text-white tracking-wider uppercase">
+                {/* Floating Top-Right Badge */}
+                <div className="absolute top-14 right-4 z-40">
+                  <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-black/70 backdrop-blur-md border border-[#FF3030]/40 text-[10px] font-mono text-white tracking-wider uppercase shadow-lg">
                     <Zap className="w-3 h-3 text-[#FF3030]" />
-                    <span>DopexCreation Studio</span>
+                    <span>DopexCreation</span>
                   </div>
                 </div>
 
-                {/* Bottom Overlay Info */}
-                <div className="relative z-20 space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Award className="w-4 h-4 text-[#FF3030]" />
-                    <span className="text-xs font-mono uppercase tracking-widest text-white font-bold">
-                      Cinematic Quality
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#B8B8B8] leading-normal font-sans">
-                    Specialized in high-converting reels, event recap films, and storytelling motion design.
-                  </p>
-                </div>
               </div>
             </div>
           </motion.div>
@@ -159,7 +228,7 @@ export function HeroSection() {
           <button
             type="button"
             onClick={scrollToReels}
-            className="group flex flex-col items-center gap-2 text-[#B8B8B8] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3030] rounded-full p-2"
+            className="group flex flex-col items-center gap-2 text-[#B8B8B8] hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3030] rounded-full p-2 cursor-pointer"
             aria-label="Scroll to portfolio reels"
           >
             <span className="text-[10px] font-mono tracking-widest uppercase">SCROLL</span>
