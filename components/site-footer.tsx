@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowUp, Lock } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 
 export function SiteFooter() {
   const scrollToTop = () => {
@@ -46,17 +45,7 @@ export function SiteFooter() {
         {/* Footer Bottom Bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono">
           <div>
-            © {new Date().getFullYear()} DopexCreation · Amir Saifi. All rights reserved.
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-1.5 text-[#B8B8B8] hover:text-[#FF3030] transition-colors"
-            >
-              <Lock className="w-3 h-3" />
-              <span>Admin Portal</span>
-            </Link>
+            © {new Date().getFullYear()} DopexCreation · Aamir Saifi. All rights reserved.
           </div>
         </div>
       </div>

@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, CheckCircle2, AlertCircle, Mail, MessageSquare, DollarSign, Film } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle, Mail, MessageSquare, Phone, Film } from 'lucide-react';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Please enter your name'),
   email: z.string().email('Please enter a valid email address'),
   projectType: z.string().min(1, 'Please select a project type'),
-  budgetRange: z.string().optional(),
+  phoneNumber: z.string().min(6, 'Please enter a valid phone number'),
   message: z.string().min(10, 'Message must be at least 10 characters'),
 });
 
@@ -23,6 +23,7 @@ export function ContactSection() {
   const [fallbackInfo, setFallbackInfo] = useState<string | null>(null);
 
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'contact@dopexcreation.com';
+  const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
   const {
     register,
@@ -35,7 +36,7 @@ export function ContactSection() {
       name: '',
       email: '',
       projectType: 'Short-Form Reel (9:16)',
-      budgetRange: '$500 - $1,000',
+      phoneNumber: '',
       message: '',
     },
   });
@@ -47,23 +48,40 @@ export function ContactSection() {
     setFallbackInfo(null);
 
     try {
-      const res = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
+      if (formspreeEndpoint) {
+        // Submit directly to Formspree
+        const res = await fetch(formspreeEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(data),
+        });
 
-      const json = await res.json();
+        if (!res.ok) {
+          throw new Error('Failed to send message via Formspree.');
+        }
 
-      if (!res.ok) {
-        throw new Error(json.error || 'Failed to submit inquiry.');
+        setSubmitSuccess('Thank you! Your message has been sent successfully.');
+        reset();
+      } else {
+        // Fallback to internal API route
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+
+        const json = await res.json();
+
+        if (!res.ok) {
+          throw new Error(json.error || 'Failed to submit inquiry.');
+        }
+
+        setSubmitSuccess(json.message || 'Thank you! Your message has been sent successfully.');
+        if (json.fallbackMode) {
+          setFallbackInfo(json.contactEmail || contactEmail);
+        }
+        reset();
       }
-
-      setSubmitSuccess(json.message || 'Thank you! Your message has been sent successfully.');
-      if (json.fallbackMode) {
-        setFallbackInfo(json.contactEmail || contactEmail);
-      }
-      reset();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Something went wrong. Please try emailing directly.';
       setSubmitError(msg);
@@ -111,7 +129,7 @@ export function ContactSection() {
               <button
                 type="button"
                 onClick={() => setSubmitSuccess(null)}
-                className="px-6 py-2.5 rounded-full bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider transition-colors"
+                className="px-6 py-2.5 rounded-full bg-[#171717] hover:bg-[#262626] text-white text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Send Another Inquiry
               </button>
@@ -142,6 +160,7 @@ export function ContactSection() {
                   </label>
                   <input
                     type="text"
+                    required
                     {...register('name')}
                     placeholder="e.g. Alex Morgan"
                     className="w-full px-4 py-3 rounded-xl bg-[#050505] border border-[#262626] focus:border-[#FF3030] text-white text-sm focus:outline-none transition-colors"
@@ -158,6 +177,7 @@ export function ContactSection() {
                   </label>
                   <input
                     type="email"
+                    required
                     {...register('email')}
                     placeholder="e.g. alex@example.com"
                     className="w-full px-4 py-3 rounded-xl bg-[#050505] border border-[#262626] focus:border-[#FF3030] text-white text-sm focus:outline-none transition-colors"
@@ -191,21 +211,22 @@ export function ContactSection() {
                   )}
                 </div>
 
-                {/* Budget Range Dropdown */}
+                {/* Phone Number Input (Replacing Budget Range) */}
                 <div>
                   <label className="block text-xs font-mono font-bold text-[#B8B8B8] uppercase tracking-wider mb-2">
-                    <DollarSign className="w-3.5 h-3.5 inline mr-1 text-[#FF3030]" />
-                    Budget Range (Optional)
+                    <Phone className="w-3.5 h-3.5 inline mr-1 text-[#FF3030]" />
+                    Phone Number *
                   </label>
-                  <select
-                    {...register('budgetRange')}
+                  <input
+                    type="tel"
+                    required
+                    {...register('phoneNumber')}
+                    placeholder="e.g. +91 XXXXX XXXXX"
                     className="w-full px-4 py-3 rounded-xl bg-[#050505] border border-[#262626] focus:border-[#FF3030] text-white text-sm focus:outline-none transition-colors"
-                  >
-                    <option value="< $500">Under $500</option>
-                    <option value="$500 - $1,000">$500 - $1,000</option>
-                    <option value="$1,000 - $3,000">$1,000 - $3,000</option>
-                    <option value="$3,000+">$3,000+</option>
-                  </select>
+                  />
+                  {errors.phoneNumber && (
+                    <p className="text-[11px] text-[#FF3030] mt-1">{errors.phoneNumber.message}</p>
+                  )}
                 </div>
               </div>
 
@@ -217,6 +238,7 @@ export function ContactSection() {
                 </label>
                 <textarea
                   rows={4}
+                  required
                   {...register('message')}
                   placeholder="Describe your footage, project scope, desired style, or deadline..."
                   className="w-full px-4 py-3 rounded-xl bg-[#050505] border border-[#262626] focus:border-[#FF3030] text-white text-sm focus:outline-none transition-colors resize-none"

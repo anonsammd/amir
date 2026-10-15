@@ -64,10 +64,14 @@ export function AboutSection() {
 
             <div className="space-y-4 text-base sm:text-lg text-[#B8B8B8] leading-relaxed mb-10">
               <p>
-                I&apos;m Aamir Saifi, the editor behind DopexCreation. I transform raw footage into engaging visual stories, combining timing, rhythm, transitions, sound, and storytelling to make every frame count.
+                I&apos;m Aamir Saifi, a Brand Designer & Professional Video Editor behind DopexCreation.
+
+                I create distinctive brand identities and compelling visual stories that bring ideas to life. From logo design and brand visuals to cinematic edits, event films, and engaging social media content, I combine creativity, precision, and storytelling to craft visuals that make a lasting impression.
               </p>
               <p>
-                From cinematic edits and event films to short-form content built for social media, my focus is simple: create videos that feel intentional, look polished, and keep people watching.
+                My approach is simple: build brands with purpose, create videos with impact, and make every visual count.
+
+                Design with Purpose. Edit with Emotion. Create with Impact.
               </p>
             </div>
 

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Play, Sparkles, ArrowDown, Zap, Film, Camera } from 'lucide-react';
+import { Play, ArrowRight, Camera, Film, Zap, ArrowDown } from 'lucide-react';
 
 export function HeroSection() {
   const [imageError, setImageError] = useState(false);
@@ -51,31 +51,39 @@ export function HeroSection() {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101010] border border-[#171717] mb-6 shadow-inner"
             >
               <span className="w-2 h-2 rounded-full bg-[#FF3030] animate-pulse" />
-              <span className="text-xs font-mono font-medium tracking-wider text-[#B8B8B8] uppercase">
-                DOPEXCREATION · PROFESSIONAL VIDEO EDITOR
+              <span className="text-xs font-mono font-medium tracking-widest text-[#B8B8B8] uppercase">
+                PORTFOLIO · 2026
               </span>
             </motion.div>
 
-            {/* Main Headline */}
+            {/* Main Headline (Aamir Saifi) */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] text-white uppercase mb-6"
+              className="text-5xl sm:text-7xl md:text-8xl font-black tracking-tight leading-[1.05] text-white uppercase mb-4"
             >
-              YOUR VISION. <br />
-              <span className="text-gradient-pure-red">MY EDIT.</span> <br />
-              PURE IMPACT.
+              Aamir Saifi
             </motion.h1>
+
+            {/* Role Subtitle */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.25 }}
+              className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gradient-pure-red tracking-tight mb-6"
+            >
+              Brand Designer & Video Editor
+            </motion.div>
 
             {/* Supporting Text */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="text-lg sm:text-xl text-[#B8B8B8] font-normal leading-relaxed max-w-2xl mb-8"
+              className="text-base sm:text-lg text-[#B8B8B8] font-normal leading-relaxed max-w-xl mb-8"
             >
-              I turn raw footage into cinematic stories, scroll-stopping reels, and visuals people remember. Master of rhythm, color grading, and dynamic motion design.
+              I help brands stand out with impactful video edits, eye-catching motion graphics, and visual identities that make their stories impossible to ignore
             </motion.p>
 
             {/* Action Buttons */}
@@ -91,7 +99,7 @@ export function HeroSection() {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#FF3030] hover:bg-[#A90F20] text-white font-bold text-sm tracking-wider uppercase transition-all duration-300 transform hover:scale-[1.03] shadow-[0_0_25px_rgba(255,48,48,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white cursor-pointer"
               >
                 <Play className="w-4 h-4 fill-current" />
-                <span>Explore My Work</span>
+                <span>View Selected Work</span>
               </button>
 
               <button
@@ -99,8 +107,8 @@ export function HeroSection() {
                 onClick={scrollToContact}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#101010] hover:bg-[#171717] border border-[#262626] hover:border-[#FF3030]/60 text-white font-bold text-sm tracking-wider uppercase transition-all duration-300 transform hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF3030] cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 text-[#FF3030]" />
-                <span>Let&apos;s Collaborate</span>
+                <span>Let&apos;s Work Together</span>
+                <ArrowRight className="w-4 h-4 text-[#FF3030]" />
               </button>
             </motion.div>
 
@@ -157,7 +165,7 @@ export function HeroSection() {
                   {!imageError ? (
                     <Image
                       src="/new_amir_saifi.jpeg"
-                      alt="Aamir Saifi - Video Editor"
+                      alt="Aamir Saifi - Brand Designer & Video Editor"
                       fill
                       priority
                       className="object-cover object-[center_10%] transition-transform duration-700 group-hover:scale-105"
@@ -178,7 +186,7 @@ export function HeroSection() {
                         AAMIR SAIFI
                       </div>
                       <div className="relative z-10 text-xs font-mono text-[#FF3030] tracking-widest uppercase mt-1">
-                        Lead Video Editor
+                        Brand Designer & Video Editor
                       </div>
 
                       <div className="relative z-10 mt-4 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#333] text-[11px] font-mono text-[#B8B8B8] max-w-[240px]">
