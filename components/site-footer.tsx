@@ -25,7 +25,8 @@ export function SiteFooter() {
           {/* Nav Quick Links */}
           <div className="flex flex-wrap justify-center gap-6 text-xs font-mono uppercase tracking-wider">
             <a href="#home" className="hover:text-white transition-colors">Home</a>
-            <a href="#reels" className="hover:text-white transition-colors">Reels</a>
+            <a href="#services" className="hover:text-white transition-colors">Services</a>
+            <a href="#reels" className="hover:text-white transition-colors">Work</a>
             <a href="#accounts" className="hover:text-white transition-colors">Accounts</a>
             <a href="#about" className="hover:text-white transition-colors">About</a>
             <a href="#contact" className="hover:text-white transition-colors">Contact</a>
